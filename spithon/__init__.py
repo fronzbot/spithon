@@ -2,7 +2,7 @@
 
 YEAR = 2023
 MONTH = 6
-PATCH = 0
+PATCH = "1.dev"
 
 __version__ = f"{YEAR}.{MONTH}.{PATCH}"
 
