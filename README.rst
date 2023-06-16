@@ -1,7 +1,7 @@
-spithon
-=======
+spithon |Lint| |PyPi Version| |Codestyle|
+=============================================
 
-A command-line tool for SPI and GPIO access on the Raspberry Pi.
+A command-line tool for SPI and GPIO access on the Raspberry Pi. (Python 3.8+)
 
 GETTING STARTED
 ---------------
@@ -232,3 +232,11 @@ automatically via:
    black <file_name>
 
 **Tests must pass before PR’s can be merged!**
+
+
+.. |Lint| image:: https://github.com/fronzbot/spithon/workflows/Lint/badge.svg
+   :target: https://github.com/fronzbot/spithon/actions?query=workflow%3ALint
+.. |PyPi Version| image:: https://img.shields.io/pypi/v/spithon.svg
+   :target: https://pypi.org/project/spithon
+.. |Codestyle| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
