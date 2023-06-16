@@ -16,7 +16,7 @@ THIS_DIR = abspath(dirname(__file__))
 with open(f"{THIS_DIR}/requirements.txt") as req_file:
     REQUIRES = [line.rstrip() for line in req_file]
 
-with open(f"{THIS_DIR}/README.md") as readme_file:
+with open(f"{THIS_DIR}/README.rst") as readme_file:
     LONG_DESCRIPTION = readme_file.read()
 
 PACKAGES = find_packages()
