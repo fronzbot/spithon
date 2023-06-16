@@ -5,7 +5,6 @@ from cachetools import TTLCache, cached
 
 try:
     import spidev
-
     SPI_VALID = True
 except ModuleNotFoundError:
     SPI_VALID = False

@@ -53,3 +53,4 @@ spithon.egg-info
 .DS_Store
 build/
 .tox/
+.coverage
