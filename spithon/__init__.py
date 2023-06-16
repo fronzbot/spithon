@@ -1,8 +1,8 @@
 """Init file for CLI."""
 
 MAJOR = 0
-MINOR = 1
-PATCH = 0
+MINOR = 2
+PATCH = "0.dev"
 
 __version__ = f"{MAJOR}.{MINOR}.{PATCH}"
 
