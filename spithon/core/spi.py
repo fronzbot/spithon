@@ -24,35 +24,35 @@ def spi_write(word, crc=False, verbose=False):
     """Write address over SPI."""
     word = conv_to_int(word)
     int_bytes = int_to_bytes(word, length=SPI_IF.num_bytes, crc=crc)
-    if not SPI_VALID:
-        return
-    if verbose:
-        click.secho(f"INFO: Sending bytes {[hex(x) for x in int_bytes]}", fg="magenta")
-    SPI_IF.spi_if.xfer(int_bytes)
-    return
+    wr_word = int.from_bytes(int_bytes, "big")
+    click.secho(f"INFO: Sending {hex(wr_word)}", fg="magenta")
+    if SPI_VALID:
+        SPI_IF.spi_if.xfer(int_bytes)
+    return wr_word
 
 
 def spi_read(word, crc=False, verbose=False):
     """Read address over SPI."""
-    if not SPI_VALID:
-        return 0
     word = conv_to_int(word)
-    int_bytes = int_to_bytes(word, length=SPI_IF.num_bytes, crc=crc)
-    if verbose:
-        click.secho(f"INFO: Sending bytes {[hex(x) for x in int_bytes]}", fg="magenta")
-    value = SPI_IF.spi_if.xfer(int_bytes)
-    value = int.from_bytes(value, "big")
-    read_value = value
+    int_bytes = int_to_bytes(word, length=SPI_IF.num_bytes)
     if crc:
-        crc_word = value & (2**CRC_CFG.width - 1)
-        if verbose:
-            click.secho(f"INFO: Got CRC word {hex(crc_word)}", fg="magenta")
-        read_value = value >> CRC_CFG.width
-        raw_word = word | value
-        check_crc(raw_word, crc_word, verbose=verbose)
+        int_bytes.extend([0 for x in range(0, int(CRC_CFG.width / 8))])
+    tx_word = int.from_bytes(int_bytes, "big")
     if verbose:
-        click.secho(f"INFO: Read back {hex(read_value)}", fg="magenta")
-    return value
+        click.secho(f"INFO: Sending {hex(tx_word)}", fg="magenta")
+    if not SPI_VALID:
+        return tx_word
+    read_val = SPI_IF.spi_if.xfer(int_bytes)
+    read_val = int.from_bytes(read_val, "big")
+    if verbose:
+        click.secho(f"INFO: Received {hex(read_val)}", fg="magenta")
+    full_word = tx_word | read_val
+    if crc:
+        crc_word = full_word & (2**CRC_CFG.width - 1)
+        check_crc((full_word >> CRC_CFG.width), crc_word, verbose=verbose)
+        if verbose:
+            click.secho(f"INFO: Extracted CRC word {hex(crc_word)}", fg="magenta")
+    return full_word
 
 
 def check_crc(word, crc_word, verbose=False):
