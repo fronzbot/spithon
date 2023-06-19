@@ -1,16 +1,15 @@
 """Test the spi.py module."""
 from unittest import TestCase
+from unittest.mock import patch
 from . import mock_spidev
-from spithon.core import spi  # pylint: disable=wrong-import-order
 
 
-class MockSpiIF(spi.SpiInterface):
-    """Mock class for SPI IF."""
-
-    def __init__(self, *args, **kwargs):
-        """Initialize a mock class."""
-        super().__init__()
-        self.spi_if = mock_spidev.SpiDev()
+with patch("spithon.core.config.load_cfg") as mock_cfg:
+    mock_cfg.side_effect = [
+        mock_spidev.CFG_MOCK["RPi.SPI"],
+        mock_spidev.CFG_MOCK["RPi.CRC"],
+    ]
+    from spithon.core import spi  # pylint: disable=wrong-import-order
 
 
 class TestSPI(TestCase):
@@ -19,7 +18,7 @@ class TestSPI(TestCase):
     def setUp(self):
         """Set up the SPI testing."""
         spi.SPI_VALID = True
-        spi.SPI_IF = MockSpiIF()
+        spi.SPI_IF.spi_if = mock_spidev.SpiDev()
         spi.SPI_IF.spi_if.num_bytes = 4
         spi.SPI_IF.num_bytes = 4
         spi.SPI_IF.word_length = 32
@@ -98,7 +97,6 @@ class TestSPI(TestCase):
         spi.spi_write(write_val, crc=False, verbose=False)
         self.assertListEqual(spi.SPI_IF.spi_if.tx_bytes, exp_bytes)
 
-
     def test_write_with_crc(self):
         """Test write method with CRC enabled."""
         write_val = "0xDEADBEEF"
@@ -109,25 +107,89 @@ class TestSPI(TestCase):
     def test_read(self):
         """Test read method."""
         write_val = "0xDEAD0000"
-        exp_value = int("0xBEEF", 16)
-        spi.SPI_IF.spi_if.return_value = exp_value
-        read_val = spi.spi_read(write_val, crc=False, verbose=False)
-        self.assertEqual(read_val, exp_value)
+        spi.SPI_IF.spi_if.return_value = int("0xBEEF", 16)
+        exp_word = int("0xDEADBEEF", 16)
+        read_word = spi.spi_read(write_val, crc=False, verbose=False)
+        self.assertEqual(read_word, exp_word)
 
     def test_read_with_int(self):
         """Test read method with integer."""
         write_val = int("0xDEAD0000", 16)
-        exp_value = int("0xBEEF", 16)
-        spi.SPI_IF.spi_if.return_value = exp_value
-        read_val = spi.spi_read(write_val, crc=False, verbose=False)
-        self.assertEqual(read_val, exp_value)
+        spi.SPI_IF.spi_if.return_value = int("0xBEEF", 16)
+        exp_word = int("0xDEADBEEF", 16)
+        read_word = spi.spi_read(write_val, crc=False, verbose=False)
+        self.assertEqual(read_word, exp_word)
+
+    def test_check_crc8(self):
+        """Test check crc8 method with valid data."""
+        word = int("0xABCD123", 16)
+        spi.CRC_CFG.poly = int("0x5F", 16)
+        spi.CRC_CFG.width = 8
+        spi.CRC_CFG.initial = int("0xA", 16)
+        # This comes from a calculator and is hard-coded
+        exp_crc = int("0x70", 16)
+        calc_crc = spi.crc_val(word)
+        self.assertTrue(spi.check_crc(word, calc_crc), exp_crc)
+
+    def test_check_crc16(self):
+        """Test check crc16 method with valid data."""
+        word = int("0xABCD123", 16)
+        spi.CRC_CFG.poly = int("0x601A", 16)
+        spi.CRC_CFG.width = 16
+        spi.CRC_CFG.initial = int("0x5", 16)
+        # This comes from a calculator and is hard-coded
+        exp_crc = int("0xACB2", 16)
+        calc_crc = spi.crc_val(word)
+        self.assertTrue(spi.check_crc(word, calc_crc), exp_crc)
+
+    def test_check_crc32(self):
+        """Test check crc132 method with valid data."""
+        word = int("0xABCD123", 16)
+        spi.CRC_CFG.poly = int("0xDEADBEEF", 16)
+        spi.CRC_CFG.width = 16
+        spi.CRC_CFG.initial = int("0x1F", 16)
+        # This comes from a calculator and is hard-coded
+        exp_crc = int("0x6761C5D9", 16)
+        calc_crc = spi.crc_val(word)
+        self.assertTrue(spi.check_crc(word, calc_crc), exp_crc)
+
+    def test_check_crc8_fail(self):
+        """Test check crc8 method with invalid data."""
+        word = int("0xABCD123", 16)
+        spi.CRC_CFG.poly = int("0x5F", 16)
+        spi.CRC_CFG.width = 8
+        spi.CRC_CFG.initial = int("0xA", 16)
+        # This comes from a calculator and is hard-coded
+        exp_crc = int("0x70", 16)
+        calc_crc = spi.crc_val(word) + 1
+        self.assertFalse(spi.check_crc(word, calc_crc), exp_crc)
+
+    def test_check_crc16_fail(self):
+        """Test check crc16 method with invalid data."""
+        word = int("0xABCD123", 16)
+        spi.CRC_CFG.poly = int("0x601A", 16)
+        spi.CRC_CFG.width = 16
+        spi.CRC_CFG.initial = int("0x5", 16)
+        # This comes from a calculator and is hard-coded
+        exp_crc = int("0xACB2", 16)
+        calc_crc = spi.crc_val(word) + 1
+        self.assertFalse(spi.check_crc(word, calc_crc), exp_crc)
+
+    def test_check_crc32_fail(self):
+        """Test check crc132 method with invalid data."""
+        word = int("0xABCD123", 16)
+        spi.CRC_CFG.poly = int("0xDEADBEEF", 16)
+        spi.CRC_CFG.width = 16
+        spi.CRC_CFG.initial = int("0x1F", 16)
+        # This comes from a calculator and is hard-coded
+        exp_crc = int("0x6761C5D9", 16)
+        calc_crc = spi.crc_val(word) + 1
+        self.assertFalse(spi.check_crc(word, calc_crc), exp_crc)
 
     def test_read_with_crc(self):
         """Test read method with CRC."""
         write_val = "0xDEAD0000"
-        exp_value = int("0xBEEF", 16)
-        spi.SPI_IF.spi_if.return_value = exp_value
-        read_val = spi.spi_read(write_val, crc=False, verbose=False)
-        self.assertEqual(read_val, exp_value)
-
-
+        spi.SPI_IF.spi_if.return_value = int("0xBEEF0A", 16)
+        exp_word = int("0xDEADBEEF0A", 16)
+        read_word = spi.spi_read(write_val, crc=True, verbose=False)
+        self.assertEqual(read_word, exp_word)

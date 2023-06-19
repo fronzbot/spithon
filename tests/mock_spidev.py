@@ -1,6 +1,23 @@
 """Mock the spidev library."""
 
-class SpiDev():
+CFG_MOCK = {
+    "RPi.SPI": {
+        "bus": 0,
+        "device": 0,
+        "mode": 0,
+        "rate": 1,
+        "bits_per_tx": 8,
+        "word_length": 32,
+    },
+    "RPi.CRC": {
+        "width": 8,
+        "polynomial": "0x10",
+        "initial_value": 0,
+    },
+}
+
+
+class SpiDev:
     """Class to mock a spidev class."""
 
     def __init__(self):
@@ -26,7 +43,7 @@ class SpiDev():
     @return_value.setter
     def return_value(self, value):
         """Convert integer return value to bytes."""
-        self._return_value = bytearray(value.to_bytes(self.num_bytes, 'big'))
+        self._return_value = bytearray(value.to_bytes(self.num_bytes, "big"))
 
     def open(self, *args, **kwawrgs):
         """Mock an open class."""
