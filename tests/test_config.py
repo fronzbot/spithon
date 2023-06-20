@@ -25,8 +25,8 @@ class TestConfig(TestCase):
         """Set up the config module for testing."""
         config.CACHE.clear()
 
-    @mock.patch('os.path.exists')
-    @mock.patch('configparser.ConfigParser.write')
+    @mock.patch("os.path.exists")
+    @mock.patch("configparser.ConfigParser.write")
     def test_make_cfg(self, mock_write, mock_exists):
         """Test the make_cfg command."""
         mock_exists.return_value = True
@@ -36,9 +36,9 @@ class TestConfig(TestCase):
         mock_exists.assert_called_once_with(config.SAVE_DIR)
         mock_write.assert_called_once()
 
-    @mock.patch('os.path.exists')
-    @mock.patch('os.mkdir')
-    @mock.patch('configparser.ConfigParser.write')
+    @mock.patch("os.path.exists")
+    @mock.patch("os.mkdir")
+    @mock.patch("configparser.ConfigParser.write")
     def test_make_cfg_no_dir(self, mock_write, mock_dir, mock_exists):
         """Test the make_cfg command with no existing dir."""
         mock_exists.return_value = False
@@ -50,9 +50,9 @@ class TestConfig(TestCase):
         mock_dir.assert_called_once_with(config.SAVE_DIR)
         mock_write.assert_called_once()
 
-    @mock.patch('os.path.isfile')
-    @mock.patch('spithon.core.config.make_cfg')
-    @mock.patch('configparser.ConfigParser')
+    @mock.patch("os.path.isfile")
+    @mock.patch("spithon.core.config.make_cfg")
+    @mock.patch("configparser.ConfigParser")
     def test_load_cfg(self, mock_parse, mock_cfg, mock_exists):
         """Test the load_cfg command with existing file."""
         mock_exists.return_value = True
@@ -64,9 +64,9 @@ class TestConfig(TestCase):
         mock_cfg.assert_not_called()
         self.assertEqual(result, {"foo": "bar"})
 
-    @mock.patch('os.path.isfile')
-    @mock.patch('spithon.core.config.make_cfg')
-    @mock.patch('configparser.ConfigParser')
+    @mock.patch("os.path.isfile")
+    @mock.patch("spithon.core.config.make_cfg")
+    @mock.patch("configparser.ConfigParser")
     def test_load_cfg_cache(self, mock_parse, mock_cfg, mock_exists):
         """Test the load_cfg command caching."""
         mock_exists.return_value = True
@@ -81,9 +81,9 @@ class TestConfig(TestCase):
         for result in results:
             self.assertEqual(result, {"foo": "bar"})
 
-    @mock.patch('os.path.isfile')
-    @mock.patch('spithon.core.config.make_cfg')
-    @mock.patch('configparser.ConfigParser')
+    @mock.patch("os.path.isfile")
+    @mock.patch("spithon.core.config.make_cfg")
+    @mock.patch("configparser.ConfigParser")
     def test_load_cfg_no_file(self, mock_parse, mock_cfg, mock_exists):
         """Test the load_cfg command without existing faile."""
         mock_exists.return_value = False
@@ -95,9 +95,9 @@ class TestConfig(TestCase):
         mock_cfg.assert_called_once()
         self.assertEqual(result, {"foo": "bar"})
 
-    @mock.patch('os.path.isfile')
-    @mock.patch('spithon.core.config.make_cfg')
-    @mock.patch('configparser.ConfigParser')
+    @mock.patch("os.path.isfile")
+    @mock.patch("spithon.core.config.make_cfg")
+    @mock.patch("configparser.ConfigParser")
     def test_load_cfg_bad_key(self, mock_parse, mock_cfg, mock_exists):
         """Test the load_cfg command with bad key."""
         mock_exists.return_value = True
