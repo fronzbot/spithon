@@ -1,7 +1,7 @@
 """Test the spi.py module."""
 from unittest import TestCase
 from unittest.mock import patch
-from . import mock_spidev
+from .. import mock_spidev
 
 
 with patch("spithon.core.config.load_cfg") as mock_cfg:
