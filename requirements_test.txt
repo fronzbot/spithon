@@ -2,7 +2,7 @@ black==23.3.0
 coverage==7.2.7
 flake8==6.0.0
 flake8-docstrings==1.7.0
-pylint==2.17.4
+pylint==2.17.5
 pydocstyle==6.3.0
 tox==4.6.2
 restructuredtext-lint==1.4.0
