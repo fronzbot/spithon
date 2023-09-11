@@ -4,6 +4,6 @@ flake8==6.0.0
 flake8-docstrings==1.7.0
 pylint==2.17.4
 pydocstyle==6.3.0
-tox==4.6.2
+tox==4.11.3
 restructuredtext-lint==1.4.0
 pygments==2.15.1
