@@ -1,4 +1,5 @@
 """Raspberry Pi Commands."""
+
 import time
 import click
 from spithon.core import gpio as gpio_ctrl

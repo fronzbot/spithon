@@ -1,4 +1,5 @@
 """Module for all SPI related functionality."""
+
 import click
 import crc as crc_calc
 from spithon.core import conv_to_int

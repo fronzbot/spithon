@@ -1,4 +1,5 @@
 """Miscellaneous IC functions."""
+
 import time
 from statistics import mean
 import click

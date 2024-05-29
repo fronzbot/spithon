@@ -1,4 +1,5 @@
 """Main CLI function."""
+
 import click
 from spithon import __version__, PROJECT_DESCRIPTION
 from spithon.cmds.spi import spi

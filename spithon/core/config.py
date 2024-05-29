@@ -1,4 +1,5 @@
 """SPI configuration creation and loading."""
+
 import os
 import configparser
 from cachetools import TTLCache, cached
