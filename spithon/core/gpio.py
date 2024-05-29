@@ -1,4 +1,5 @@
 """Module for all RPi GPIO related functionality."""
+
 try:
     # pylint: disable-next=consider-using-from-import
     import RPi.GPIO as GPIO

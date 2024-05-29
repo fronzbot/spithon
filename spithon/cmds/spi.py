@@ -1,4 +1,5 @@
 """SPI Commands."""
+
 import click
 from spithon.cmds.common import CONTEXT_SETTINGS, OPTS
 from spithon.core import spi as spi_ctrl
