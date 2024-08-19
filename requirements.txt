@@ -1,4 +1,4 @@
-cachetools==5.3.3
+cachetools==5.5.0
 click==8.1.7
 crc==4.3.0
 spidev==3.6; sys_platform=="linux"
